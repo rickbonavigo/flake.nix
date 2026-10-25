@@ -98,13 +98,79 @@
         StandardErrorPath = "/var/log/karabiner-virtualhiddevice-daemon.log";
       };
 
+      environment.etc."kanata.cfg".text = ''
+        (defcfg
+          process-unmapped-keys yes
+          concurrent-tap-hold   yes
+        )
+
+        (defalias
+          qwt (tap-dance 180 (rmet (layer-switch qwerty)))
+          cmk (tap-dance 180 (rmet (layer-switch colemak-dh)))
+          cap (tap-hold-press 180 180 esc lctl)
+          \ (tap-hold-press 180 180 \ rctl)
+          arr (tap-hold-press 180 180 < (layer-toggle arrows))
+        )
+
+        (defalias
+          fn (tap-hold 250 250 fn (layer-toggle fn))
+        )
+
+        (defsrc
+          esc f1  f2  f3  f4  f5  f6  f7  f8  f9  f10 f11 f12
+          < 1 2 3 4 5 6 7 8 9 0 - = bspc
+          tab q w e r t y u i o p [ ]
+          caps  a s d f g h j k l ; ' \ ret
+          lsft  grv z x c v b n m , . / rsft
+          fn  lctl  lalt  lmet  spc rmet  ralt  ◀ ▲ ▼ ▶
+        )
+
+
+
+        (deflayer colemak-dh
+          _ 🔅 🔆 mctl  sls dtn dnd ◀◀  ▶⏸  ▶▶  🔇 🔉 🔊
+          grv _ _ _ _ _ _ _ _ _ _ _ _ _
+          _ q w f p b j l u y ; _ _
+          @cap  a r s t g m n e i o _ _ _
+          _ z x c d v @arr  k h _ _ _ _
+          @fn _ _ _ _ @qwt  _ _ _ _ _
+        )
+
+        (deflayer qwerty
+          _ 🔅 🔆 mctl  sls dtn dnd ◀◀  ▶⏸  ▶▶  🔇 🔉 🔊
+          grv _ _ _ _ _ _ _ _ _ _ _ _ _
+          _ _ _ _ _ _ _ _ _ _ _ _ _
+          @cap  _ _ _ _ _ _ _ _ _ _ _ _ _
+          _ < _ _ _ _ _ _ _ _ _ _ _
+          @fn _ _ _ _ @cmk  _ _ _ _ _
+        )
+
+        (deflayer arrows
+          _ _ _ _ _ _ _ _ _ _ _ _ _
+          _ _ _ _ _ _ _ _ _ _ _ _ _ _
+          _ _ _ _ _ _ _ _ _ _ _ _ _
+          @cap  _ _ _ _ _ _ left  down  up  rght  _ _   _
+          _ _ _ _ _ _ _ _ _ _ _ _ _
+          _ _ _ _ _ _ _ _ _ _ _
+        )
+
+        (deflayer fn
+          _ f1  f2  f3  f4  f5  f6  f7  f8  f9  f10 f11 f12
+          _ _ _ _ _ _ _ _ _ _ _ _ _ del
+          _ _ _ _ _ _ _ _ _ _ _ _ _
+          @cap  _ _ _ _ _ _ _ _ _ _ _ _ _
+          _ _ _ _ _ _ _ _ _ _ _ _ _
+          _ _ _ _ _ _ _ _ _ _ _
+        )
+      '';
+
       launchd.daemons.kanata.serviceConfig = {
         Label = "org.rick.kanata";
         ProgramArguments = [
           "/opt/homebrew/bin/kanata"
           "-t"
           "--cfg"
-          "/Users/rick/.config/kanata.cfg"
+          "/etc/kanata.cfg"
         ];
         RunAtLoad = true;
         KeepAlive = true;
